@@ -1,22 +1,60 @@
-import Selector from "./components/Selector";
+import { useState, ChangeEvent } from "react";
 import { FaExchangeAlt } from "react-icons/fa";
-
-
-const BASE_URL = "https://v6.exchangerate-api.com/v6/1209896fa7f068e468cca43a/latest/"
-const data = ["USD", "GBP", "EUR"];
+import CurrencySelector from "./components/CurrencySelector";
+import useCurrency from "./hooks/useCurrency";
 
 function App() {
-  console.log(import.meta.env.VITE_API_KEY)
+  const [fromCurrency, setFromCurrency] = useState<number>(1);
+  const [fromCurrencySelected, setFromCurrencySelected] = useState<string>("USD");
+  const [toCurrencySelected, setToCurrencySelected] = useState<string>("USD");
+
+  const { data: currency } = useCurrency(fromCurrencySelected);
+
+  const conversionRate = currency?.conversion_rates?.[toCurrencySelected] || 0;
+  const toCurrency = isNaN(fromCurrency) || isNaN(conversionRate)
+    ? 0
+    : fromCurrency * conversionRate;
+
+  const handleFromCurrencyChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFromCurrency(parseFloat(e.target.value));
+  };
+
+  const handleFromCurrencySelect = (currency: string) => {
+    setFromCurrencySelected(currency);
+  };
+
+  const handleToCurrencySelect = (currency: string) => {
+    setToCurrencySelected(currency);
+  };
+
   return (
     <div
       className="d-flex flex-column align-items-center justify-content-center gap-3"
       style={{ height: "100vh", background: "red" }}
     >
       <h1>Currency Converter</h1>
-      <Selector options={data} />
-      <FaExchangeAlt size={40} />
+      <h2>from</h2>
+      <div className="d-flex gap-3">
+        <input
+          value={fromCurrency}
+          type="number"
+          className="form-control"
+          onChange={handleFromCurrencyChange}
+        />
+        <CurrencySelector onSelect={handleFromCurrencySelect} />
+      </div>
 
-      <Selector options={data} />
+      <FaExchangeAlt size={40} />
+      <h2>to</h2>
+      <div className="d-flex gap-3">
+        <input
+          value={toCurrency}
+          type="number"
+          className="form-control"
+          disabled
+        />
+        <CurrencySelector onSelect={handleToCurrencySelect} />
+      </div>
     </div>
   );
 }
