@@ -2,9 +2,12 @@
 
 ## Overview
 
+A currency converter application
 where a user can enter a numeric amount in any supported currency and
 receive the equivalent amount back in any other supported currency, at
 the current conversion rate.
+
+Using the following API: https://www.exchangerate-api.com/docs/free
 
 
 
